@@ -1,6 +1,6 @@
-# Summerhouse Ventilation Controller for Shelly Plug S Plus
+# Summerhouse Ventilation Controller for Shelly Plug S
 
-This repository contains a Shelly script for a summerhouse ventilation controller. It is an adapted version of an existing approach and is intended for a small detached annex equipped with two BLE sensors, one inside and one outside.
+This repository contains a Shelly script for a summerhouse ventilation controller. It is intended for a small detached annex equipped with two BLE sensors, one inside and one outside.
 
 ## Origin of the Code
 
