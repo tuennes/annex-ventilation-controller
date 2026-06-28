@@ -58,6 +58,6 @@ Potential future improvements include:
 
 ## License
 
-This project is licensed under the same license as the referenced projects.
-The original source project is distributed under the Boost Software License 1.0.
-This repository follows that same licensing approach unless otherwise noted.
+This project is licensed under the Boost Software License 1.0.
+The repository includes a LICENSE file with the full text of that license.
+The original reference project was distributed under the same license.
