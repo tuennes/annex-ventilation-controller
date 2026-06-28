@@ -1,6 +1,6 @@
 # Summerhouse Ventilation Controller for Shelly Plug S Plus
 
-This repository contains a Shelly script for an Summerhouse ventilation controller. It is an adapted version of an existing approach and is intended for a small detached annex equipped with two BLE sensors, one inside and one outside.
+This repository contains a Shelly script for a summerhouse ventilation controller. It is an adapted version of an existing approach and is intended for a small detached annex equipped with two BLE sensors, one inside and one outside.
 
 ## Origin of the Code
 
@@ -17,7 +17,7 @@ This repository extends that concept with:
 - Winter mode: ventilation runs only when the outdoor air is sufficiently drier than the indoor air.
 - Summer mode: ventilation runs during configured daily time windows regardless of humidity.
 - Off mode: regular ventilation can be disabled entirely.
-- Configurable intensity using a duty-cycle approach, because the Shelly Plug S Plus can only switch on and off.
+- Simple on/off control, because the Shelly Plug S Plus can only switch the fan on and off.
 - Remote control through the Shelly App when the Shelly Cloud connection is configured.
 
 ## Installation
@@ -46,7 +46,6 @@ At minimum, the following values should be adjusted in [taupunkt_annex.js](taupu
 - `start_hour` and `start_minute`
 - `schedule_mode`
 - `duration_minutes` or `end_hour` and `end_minute`
-- `fan_intensity_percent`
 
 ## Improvement Ideas
 

@@ -6,7 +6,7 @@
 // - Winterbetrieb: nur lüften, wenn die Außenluft feuchtereguliert trockener ist als innen
 // - Sommerbetrieb: täglich zu einer konfigurierbaren Zeit lüften, unabhängig von der Feuchte
 // - Kein regelmäßiger Betrieb
-// - Einfache Schaltlogik mit einstellbarer Intensität als Tastverhältnis
+// - Einfache Schaltlogik mit Ein-/Ausschalten
 //
 // Wichtig:
 // - Mindestens die MAC-Adressen von sensor_aussen und sensor_innen anpassen.
@@ -48,7 +48,6 @@ var humidity_diff_threshold = 0;   // [%] Lüften nur, wenn RH innen > RH außen
 var control_interval_seconds = 60; // [s] Steuerung prüfen alle X Sekunden
 var battery_warn_threshold = 20;  // [%] LED blinkt rot, wenn Batteriestand darunter liegt
 var lost_connection_timeout = 1800; // [s] Nach dieser Zeit wird der Lüfter ausgeschaltet
-var fan_intensity_percent = 100;   // [%] 100 = durchgehend im aktiven Fenster, 50 = 50% der Zeit
 
 //===== Ende Konfiguration =====
 
@@ -71,14 +70,6 @@ function taupunkt(T, RH) {
   return (b * alpha) / (a - alpha);
 }
 
-function getMinutesOfDay(date) {
-  return date.getHours() * 60 + date.getMinutes();
-}
-
-function getSecondsOfDay(date) {
-  return date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-}
-
 function isWithinSchedule(now) {
   var start = start_hour * 60 + start_minute;
   var current = now.getHours() * 60 + now.getMinutes();
@@ -97,20 +88,6 @@ function isWithinSchedule(now) {
     return current >= start || current < end;
   }
   return current >= start && current < end;
-}
-
-function getIntensityState(now) {
-  if (fan_intensity_percent >= 100) {
-    return true;
-  }
-  if (fan_intensity_percent <= 0) {
-    return false;
-  }
-
-  var cycle_seconds = 600; // 10 Minuten
-  var cycle_position = getSecondsOfDay(now) % cycle_seconds;
-  var on_seconds = Math.round((fan_intensity_percent / 100) * cycle_seconds);
-  return cycle_position < on_seconds;
 }
 
 function farbring(red, green, blue, helligkeit) {
@@ -232,14 +209,6 @@ function evaluateControl() {
     reason = "Kein regelmäßiger Betrieb gewählt";
   }
 
-  if (within_schedule && fan_intensity_percent < 100) {
-    var intensity_on = getIntensityState(now);
-    should_run = should_run && intensity_on;
-    if (!intensity_on) {
-      reason = reason + " (Intensität reduziert)";
-    }
-  }
-
   if (should_run) {
     print("Lüfter einschalten – " + reason);
     setFanState(true);
@@ -271,7 +240,7 @@ function checkBlu(event) {
 
 Timer.set(control_interval_seconds * 1000, true, function () {
   print("----- Steuerung alle", control_interval_seconds, "s -----");
-  print("Modus:", betrieb_modus, "Zeitfenster:", start_hour, ":", start_minute, "-", end_hour, ":", end_minute, "Intensität:", fan_intensity_percent, "%");
+  print("Modus:", betrieb_modus, "Zeitfenster:", start_hour, ":", start_minute, "-", end_hour, ":", end_minute);
   print("Innen: T =", temperatur_innen, "°C, RH =", humidity_innen, "%, Tp =", taupunkt_innen, "°C");
   print("Außen: T =", temperatur_aussen, "°C, RH =", humidity_aussen, "%, Tp =", taupunkt_aussen, "°C");
   syncModeFromShellyApp();
