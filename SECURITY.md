@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-See main branch, only one version is maitained and will be kept updated.
+See main branch, only one version is maintained and will be kept updated.
 
 ## Reporting a Vulnerability
 
