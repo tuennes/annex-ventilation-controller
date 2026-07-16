@@ -31,8 +31,22 @@ jobs:
         with:
           languages: ${{ matrix.language }}
 
-      - name: Autobuild
+      - name: Check for package.json
+        id: pkg
+        run: |
+          if [ -f package.json ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Autobuild (only if package.json present)
+        if: steps.pkg.outputs.found == 'true'
         uses: github/codeql-action/autobuild@v3
+
+      - name: Skip Autobuild (no build required)
+        if: steps.pkg.outputs.found == 'false'
+        run: echo "No build steps required for this repository."
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
