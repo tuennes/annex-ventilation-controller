@@ -221,14 +221,21 @@ function evaluateControl() {
   }
 }
 
+function normalizeAddress(addr) {
+  if (typeof addr !== "string") {
+    return null;
+  }
+  return addr.replace(/[:\-\s]/g, "").toUpperCase();
+}
+
 function checkBlu(event) {
   if (ble_debug) {
     print("BLE-Event: addr=", event.address, "temp=", event.temperature, "hum=", event.humidity, "batt=", event.battery);
   }
 
-  var normalizedAddress = (typeof event.address === "string") ? event.address.toUpperCase() : null;
-  var sensorAussenNorm = (typeof sensor_aussen === "string") ? sensor_aussen.toUpperCase() : null;
-  var sensorInnenNorm = (typeof sensor_innen === "string") ? sensor_innen.toUpperCase() : null;
+  var normalizedAddress = normalizeAddress(event.address);
+  var sensorAussenNorm = normalizeAddress(sensor_aussen);
+  var sensorInnenNorm = normalizeAddress(sensor_innen);
 
   if (normalizedAddress === sensorAussenNorm) {
     temperatur_aussen = event.temperature;
