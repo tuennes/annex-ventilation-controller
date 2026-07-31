@@ -48,6 +48,7 @@ var humidity_diff_threshold = 0;   // [%] Lüften nur, wenn RH innen > RH außen
 var control_interval_seconds = 60; // [s] Steuerung prüfen alle X Sekunden
 var battery_warn_threshold = 20;  // [%] LED blinkt rot, wenn Batteriestand darunter liegt
 var lost_connection_timeout = 1800; // [s] Nach dieser Zeit wird der Lüfter ausgeschaltet
+var ble_debug = true; // [bool] Debug-Ausgaben für BLE-Ereignisse aktivieren
 
 //===== Ende Konfiguration =====
 
@@ -221,20 +222,30 @@ function evaluateControl() {
 }
 
 function checkBlu(event) {
-  if (event.address === sensor_aussen) {
+  if (ble_debug) {
+    print("BLE-Event: addr=", event.address, "temp=", event.temperature, "hum=", event.humidity, "batt=", event.battery);
+  }
+
+  var normalizedAddress = (typeof event.address === "string") ? event.address.toUpperCase() : null;
+  var sensorAussenNorm = (typeof sensor_aussen === "string") ? sensor_aussen.toUpperCase() : null;
+  var sensorInnenNorm = (typeof sensor_innen === "string") ? sensor_innen.toUpperCase() : null;
+
+  if (normalizedAddress === sensorAussenNorm) {
     temperatur_aussen = event.temperature;
     humidity_aussen = event.humidity;
     taupunkt_aussen = taupunkt(event.temperature, event.humidity);
     battery_aussen = event.battery;
     lost_connection_aussen = 0;
     print("Neue Werte für Außen:", temperatur_aussen, "°C,", humidity_aussen, "%, Tp:", taupunkt_aussen, "°C, Batt:", battery_aussen, "%");
-  } else if (event.address === sensor_innen) {
+  } else if (normalizedAddress === sensorInnenNorm) {
     temperatur_innen = event.temperature;
     humidity_innen = event.humidity;
     taupunkt_innen = taupunkt(event.temperature, event.humidity);
     battery_innen = event.battery;
     lost_connection_innen = 0;
     print("Neue Werte für Innen:", temperatur_innen, "°C,", humidity_innen, "%, Tp:", taupunkt_innen, "°C, Batt:", battery_innen, "%");
+  } else if (ble_debug) {
+    print("BLE-Event ignoriert: Adresse passt nicht zu sensor_aussen/sensor_innen");
   }
 }
 
