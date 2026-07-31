@@ -1,7 +1,6 @@
 # Summerhouse Ventilation Controller for Shelly Plug S
 
 This repository contains a Shelly script for a summerhouse ventilation controller. It is intended for a small detached annex equipped with two BLE sensors, one inside and one outside.
-
 ## Origin of the Code
 
 The original basis for this project comes from [BoeserBob/Taupi-4.0](https://github.com/BoeserBob/Taupi-4.0).
