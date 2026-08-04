@@ -41,20 +41,24 @@ function hasPlaceholderAddress(address) {
 }
 
 function disableLeds() {
-  Shelly.call("PLUGS_UI.SetConfig", {
-    id: 0,
-    config: {
-      leds: {
-        mode: "switch",
-        colors: {
-          "switch:0": {
-            on: { rgb: [0, 0, 0], brightness: 0 },
-            off: { rgb: [0, 0, 0], brightness: 0 }
+  try {
+    Shelly.call("PLUGS_UI.SetConfig", {
+      id: 0,
+      config: {
+        leds: {
+          mode: "switch",
+          colors: {
+            "switch:0": {
+              on: { rgb: [0, 0, 0], brightness: 0 },
+              off: { rgb: [0, 0, 0], brightness: 0 }
+            }
           }
         }
       }
-    }
-  }, function () {}, null);
+    }, function () {}, null);
+  } catch (e) {
+    print("disableLeds failed:", e);
+  }
 }
 
 function setFanState(on) {

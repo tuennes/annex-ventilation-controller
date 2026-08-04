@@ -16,7 +16,7 @@ This repository extends that concept with:
 - `taupunkt_annex_winter.js`: winter mode where the fan runs only when the outdoor dew point is sufficiently lower than the indoor dew point, using a 2 °C start threshold and 1 °C stop threshold.
 - `taupunkt_annex_summer.js`: summer mode where the fan runs on a fixed runtime/pause cycle, independent of humidity.
 - Simple on/off control, because the Shelly Plug S Plus can only switch the fan on and off.
-- LEDs are disabled in both scripts so the device does not light up during operation.
+- LEDs are disabled in both scripts so the device does not light up during operation. Each script disables LEDs safely and keeps them off even when BLE data is unavailable.
 - BLE sensor support using the Shelly BLE gateway.
 
 ## Installation
