@@ -1,33 +1,32 @@
 # Annex Ventilation Controller for Shelly Plug S Plus
 
-This repository contains a Shelly script for an annex ventilation controller. It is intended for a small detached annex equipped with two BLE sensors, one indoors and one outdoors.
+This repository contains Shelly scripts for an annex ventilation controller. It is intended for a small detached annex equipped with two BLE sensors, one indoors and one outdoors.
 
 ## Origin of the Code
 
 The original basis for this project comes from [BoeserBob/Taupi-4.0](https://github.com/BoeserBob/Taupi-4.0).
 This repository extends that concept with:
 - winter mode based on indoor/outdoor dew point comparison
-- summer mode using a fixed daily time window
-- an off mode for disabling automatic ventilation
-- simple Shelly App-based switching between summer and winter mode
+- summer mode using a fixed runtime/pause schedule
+- a dedicated summer script and a dedicated winter script
 - a basic status display using the Shelly device name
 
 ## Features
 
-- Winter mode: the fan runs only when the outdoor dew point is sufficiently higher than the indoor dew point, using a 1 °C buffer and 0.5 °C hysteresis.
-- Summer mode: the fan runs during a configurable daily window, regardless of humidity.
-- Off mode: automatic control can be disabled completely.
+- `taupunkt_annex_winter.js`: winter mode where the fan runs only when the outdoor dew point is sufficiently lower than the indoor dew point, using a 2 °C start threshold and 1 °C stop threshold.
+- `taupunkt_annex_summer.js`: summer mode where the fan runs on a fixed runtime/pause cycle, independent of humidity.
 - Simple on/off control, because the Shelly Plug S Plus can only switch the fan on and off.
-- Remote control through the Shelly App when the Shelly Cloud connection is configured.
+- LEDs are disabled in both scripts so the device does not light up during operation.
+- BLE sensor support using the Shelly BLE gateway.
 
 ## Installation
 
 1. Set up a Shelly Plug S Plus.
 2. Enable Bluetooth on the device.
-3. Install [taupunkt_annex.js](taupunkt_annex.js) as a script on the Shelly.
+3. Install `taupunkt_annex_winter.js` or `taupunkt_annex_summer.js` as a script on the Shelly.
 4. Configure the script to start automatically.
-5. Pair the BLE sensors and adjust the MAC addresses in the script.
-6. Configure the desired operating mode and time window in the script header.
+5. Adjust the indoor and outdoor BLE sensor MAC addresses in the selected script.
+6. Configure the desired runtime/pause or hysteresis settings in the script header.
 
 ### Required Hardware
 
@@ -38,14 +37,29 @@ This repository extends that concept with:
 
 ### Configuration Parameters
 
-At minimum, the following values should be adjusted in [taupunkt_annex.js](taupunkt_annex.js):
+`taupunkt_annex_winter.js`:
 
 - `sensor_aussen`
 - `sensor_innen`
-- `betrieb_modus` (default: `winter`)
-- `summer_start_hour` and `summer_start_minute`
-- `summer_end_hour` and `summer_end_minute`
-- `dewpoint_on_buffer_c` and `dewpoint_off_buffer_c`
+- `dewpoint_on_buffer_c`
+- `dewpoint_off_buffer_c`
+- `control_interval_seconds`
+- `battery_warn_threshold`
+- `lost_connection_timeout`
+- `ble_debug`
+
+`taupunkt_annex_summer.js`:
+
+- `sensor_aussen`
+- `sensor_innen`
+- `summer_run_time_minutes`
+- `summer_pause_time_minutes`
+- `control_interval_seconds`
+- `battery_warn_threshold`
+- `lost_connection_timeout`
+- `ble_debug`
+
+`taupunkt_annex.js` is the legacy combined script and is no longer required for the dedicated summer/winter operation.
 
 ## Notes
 
