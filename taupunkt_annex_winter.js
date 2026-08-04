@@ -16,14 +16,33 @@ var ble_supported_by_device = null;
 print("Script startup: taupunkt_annex_winter.js V1.2");
 print("Winter mode: dedicated script, no app switch handling.");
 
-if (hasPlaceholderAddress(sensor_aussen) || hasPlaceholderAddress(sensor_innen)) {
-  print("WARNING: sensor_aussen/sensor_innen still contain placeholder addresses.");
-}
-
 var taupunkt_aussen, taupunkt_innen, temperatur_innen, temperatur_aussen;
 var humidity_innen, humidity_aussen, battery_innen, battery_aussen;
 var lost_connection_innen = 0, lost_connection_aussen = 0;
 var luefterstatus = null;
+
+function startup() {
+  if (hasPlaceholderAddress(sensor_aussen) || hasPlaceholderAddress(sensor_innen)) {
+    print("WARNING: sensor_aussen/sensor_innen still contain placeholder addresses.");
+  }
+
+  initBLE();
+  Timer.set(control_interval_seconds * 1000, true, function () {
+    print("----- Winter control cycle every", control_interval_seconds, "s -----");
+    print("Inside: T =", temperatur_innen, "°C, RH =", humidity_innen, "%, dew point =", taupunkt_innen, "°C");
+    print("Outside: T =", temperatur_aussen, "°C, RH =", humidity_aussen, "%, dew point =", taupunkt_aussen, "°C");
+    evaluateControl();
+    updateDeviceNameForApp();
+  });
+}
+
+var startupError = false;
+try {
+  startup();
+} catch (e) {
+  startupError = true;
+  print("Fatal startup error:", e);
+}
 
 function hasPlaceholderAddress(address) {
   if (typeof address !== "string") return true;
@@ -45,20 +64,24 @@ function taupunkt(T, RH) {
 }
 
 function disableLeds() {
-  Shelly.call("PLUGS_UI.SetConfig", {
-    id: 0,
-    config: {
-      leds: {
-        mode: "switch",
-        colors: {
-          "switch:0": {
-            on: { rgb: [0, 0, 0], brightness: 0 },
-            off: { rgb: [0, 0, 0], brightness: 0 }
+  try {
+    Shelly.call("PLUGS_UI.SetConfig", {
+      id: 0,
+      config: {
+        leds: {
+          mode: "switch",
+          colors: {
+            "switch:0": {
+              on: { rgb: [0, 0, 0], brightness: 0 },
+              off: { rgb: [0, 0, 0], brightness: 0 }
+            }
           }
         }
       }
-    }
-  }, function () {}, null);
+    }, function () {}, null);
+  } catch (e) {
+    print("disableLeds failed:", e);
+  }
 }
 
 function setFanState(on) {
@@ -314,8 +337,19 @@ function initBLE() {
       ble_supported_by_device = true;
     }
   } catch (e) { print("BLE init: getComponentConfig failed", e); }
+
+  if (typeof BLE === "undefined") {
+    print("BLE init: BLE object is not available on this device/firmware.");
+    ble_supported_by_device = false;
+    return;
+  }
+
   try {
-    if (typeof BLE.Scanner === "undefined" || typeof BLE.Scanner.Start !== "function") { print("BLE init: BLE.Scanner API is not available on this firmware."); ble_supported_by_device = false; return; }
+    if (typeof BLE.Scanner === "undefined" || typeof BLE.Scanner.Start !== "function") {
+      print("BLE init: BLE.Scanner API is not available on this firmware.");
+      ble_supported_by_device = false;
+      return;
+    }
     if (!BLE.Scanner.isRunning()) {
       var bleScanner = BLE.Scanner.Start({ duration_ms: BLE.Scanner.INFINITE_SCAN, active: false });
       if (!bleScanner) { print("Error: Can not start new scanner"); return; }

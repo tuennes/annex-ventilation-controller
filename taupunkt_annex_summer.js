@@ -302,8 +302,19 @@ function initBLE() {
       ble_supported_by_device = true;
     }
   } catch (e) { print("BLE init: getComponentConfig failed", e); }
+
+  if (typeof BLE === "undefined") {
+    print("BLE init: BLE object is not available on this device/firmware.");
+    ble_supported_by_device = false;
+    return;
+  }
+
   try {
-    if (typeof BLE.Scanner === "undefined" || typeof BLE.Scanner.Start !== "function") { print("BLE init: BLE.Scanner API is not available on this firmware."); ble_supported_by_device = false; return; }
+    if (typeof BLE.Scanner === "undefined" || typeof BLE.Scanner.Start !== "function") {
+      print("BLE init: BLE.Scanner API is not available on this firmware.");
+      ble_supported_by_device = false;
+      return;
+    }
     if (!BLE.Scanner.isRunning()) {
       var bleScanner = BLE.Scanner.Start({ duration_ms: BLE.Scanner.INFINITE_SCAN, active: false });
       if (!bleScanner) { print("Error: Can not start new scanner"); return; }
