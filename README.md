@@ -1,6 +1,6 @@
 # Annex Ventilation Controller for Shelly Plug S Plus
 
-This repository contains Shelly scripts for an annex ventilation controller. It is intended for a small detached annex that uses BLE sensors for winter dew-point control and a simple time schedule for summer.
+This repository contains Shelly scripts for an annex ventilation controller. It is intended for a small detached annex that uses BLE sensors for winter dew-point control and a customizable time window for summer.
 
 ## Origin of the Code
 
@@ -14,7 +14,7 @@ This repository extends that concept with:
 ## Features
 
 - `taupunkt_annex_winter.js`: winter mode where the fan runs only when the outdoor dew point is sufficiently lower than the indoor dew point, using a 2 °C start threshold and 1 °C stop threshold.
-- `taupunkt_annex_summer.js`: summer mode where the fan runs only during 13:00-16:00, without BLE temperature or humidity measurement.
+- `taupunkt_annex_summer.js`: summer mode where the fan runs only during a configurable time window, without BLE temperature or humidity measurement.
 - Simple on/off control, because the Shelly Plug S Plus can only switch the fan on and off.
 - LEDs are disabled in both scripts so the device does not light up during operation.
 
@@ -50,8 +50,8 @@ This repository extends that concept with:
 `taupunkt_annex_summer.js`:
 
 - `control_interval_seconds`
-- `fan_start_hour` (default 13)
-- `fan_stop_hour` (default 16)
+- `fan_start_time` (default "13:00")
+- `fan_stop_time` (default "16:00")
 
 `taupunkt_annex.js` is the legacy combined script and is no longer required for the dedicated summer/winter operation.
 
